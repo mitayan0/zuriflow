@@ -1,4 +1,3 @@
-
 venv/
 .venv/
 
@@ -17,3 +16,25 @@ Operating System files
 Thumbs.db
 
 .env
+
+# Ignore logs and runtime files
+*.log
+celerybeat-schedule*
+celerybeat.pid
+
+# Ignore test and coverage outputs
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Ignore example and script outputs
+examples/*.out
+scripts/*.out
+
+# Ignore Jupyter and notebook checkpoints
+.ipynb_checkpoints/
+
+
+examples/
+scripts/

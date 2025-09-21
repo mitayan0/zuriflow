@@ -1,3 +1,8 @@
+"""
+sql_exec.py
+-----------
+Implements SQLExecutor for running SQL queries as workflow tasks.
+"""
 from .base import BaseExecutor
 from sqlalchemy import text
 from zuriflow.db import engine

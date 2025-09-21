@@ -1,3 +1,8 @@
+"""
+http_exec.py
+------------
+Implements HTTPExecutor for making HTTP requests as workflow tasks.
+"""
 from .base import BaseExecutor
 import requests
 
