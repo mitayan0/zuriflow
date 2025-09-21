@@ -1,3 +1,10 @@
+"""
+db.py
+-----
+Defines SQLAlchemy ORM models for Workflow, Task, WorkflowRun, TaskRun.
+Defines Pydantic schemas for API validation.
+Handles database setup and initialization.
+"""
 from sqlalchemy import create_engine, Column, Integer, String, JSON, ForeignKey, Enum, DateTime, Text, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -27,6 +34,7 @@ class Workflow(Base):
     name = Column(String, unique=True)
     schedule = Column(String, nullable=True)  # cron expression
     status = Column(String, default="ACTIVE")
+    dag = Column(JSON, nullable=True)  # Store workflow DAG as JSON (industry-grade, extensible)
     tasks = relationship("Task", back_populates="workflow")
 
 class Task(Base):
@@ -66,6 +74,7 @@ class WorkflowBase(BaseModel):
     name: str
     schedule: Optional[str] = None
     status: Optional[str] = "PENDING"
+    dag: Optional[dict] = None  # See orchestrator.py for supported fields
 
 class WorkflowCreate(WorkflowBase):
     pass
@@ -74,11 +83,13 @@ class WorkflowUpdate(BaseModel):
     name: Optional[str] = None
     schedule: Optional[str] = None
     status: Optional[str] = None
+    dag: Optional[dict] = None
 
 class WorkflowOut(WorkflowBase):
     id: int
+    dag: Optional[dict] = None
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TaskBase(BaseModel):
     name: str
@@ -101,12 +112,12 @@ class TaskOut(TaskBase):
     id: int
     workflow_id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Database setup
 
-engine = create_engine(settings.DB_URL, echo=True)
+engine = create_engine(settings.DB_URL, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
