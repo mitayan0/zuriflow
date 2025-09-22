@@ -43,11 +43,14 @@ _register_builtin_executors()
 
 # Load all executors in executors/ as plugins (if they have register())
 def load_executor_plugins():
+    import os
+    import importlib
     exec_dir = os.path.join(os.path.dirname(__file__), "executors")
     for fname in os.listdir(exec_dir):
         if fname.endswith(".py") and not fname.startswith("__"):
-            modname = f"zuriflow.executors.{fname[:-3]}"
-            mod = importlib.import_module(modname)
+            # Relative import instead of absolute 'zuriflow.executors...'
+            modname = f".executors.{fname[:-3]}"
+            mod = importlib.import_module(modname, package=__package__)
             if hasattr(mod, "register"):
                 mod.register(register_executor)
 

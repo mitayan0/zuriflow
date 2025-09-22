@@ -24,9 +24,9 @@ init_db()
 app = FastAPI(title="Workflow Engine API")
 
 
-# -------------------------------
+
 # Dependency: get DB session
-# -------------------------------
+
 def get_db():
     db = SessionLocal()
     try:
@@ -35,9 +35,9 @@ def get_db():
         db.close()
 
 
-# -------------------------------
+
 # Workflows CRUD
-# -------------------------------
+
 @app.post("/workflows/", response_model=WorkflowOut)
 def create_workflow(workflow: WorkflowCreate, db: Session = Depends(get_db)):
     # Validate DAG if present
@@ -169,9 +169,9 @@ def trigger_workflow(workflow_id: int):
     return {"workflow_run_id": wf_run.id}
 
 
-# -------------------------------
+
 # Schedule a workflow (set/update cron)
-# -------------------------------
+
 @app.post("/workflows/{workflow_id}/schedule")
 def schedule_workflow(workflow_id: int, cron: str = Body(..., embed=True), db: Session = Depends(get_db)):
     workflow = db.query(Workflow).filter(Workflow.id == workflow_id).first()
@@ -184,9 +184,9 @@ def schedule_workflow(workflow_id: int, cron: str = Body(..., embed=True), db: S
     return {"workflow_id": workflow_id, "schedule": cron}
 
 
-# -------------------------------
+
 # Schedule a single task (as a one-task workflow)
-# -------------------------------
+
 @app.post("/tasks/{task_id}/schedule")
 def schedule_task(task_id: int, cron: str = Body(..., embed=True), db: Session = Depends(get_db)):
     task = db.query(Task).filter(Task.id == task_id).first()
@@ -202,9 +202,9 @@ def schedule_task(task_id: int, cron: str = Body(..., embed=True), db: Session =
     return {"task_id": task_id, "workflow_id": workflow.id, "schedule": cron}
 
 
-# -------------------------------
+
 # Trigger a single task immediately
-# -------------------------------
+
 @app.post("/tasks/{task_id}/run")
 def trigger_task(task_id: int, db: Session = Depends(get_db)):
     task = db.query(Task).filter(Task.id == task_id).first()
@@ -219,9 +219,9 @@ def trigger_task(task_id: int, db: Session = Depends(get_db)):
     return {"task_run_id": task_run.id, "celery_id": async_result.id}
 
 
-# -------------------------------
+
 # Monitoring: Workflow/task runs
-# -------------------------------
+
 from fastapi.responses import JSONResponse
 
 @app.get("/workflow_runs/")
