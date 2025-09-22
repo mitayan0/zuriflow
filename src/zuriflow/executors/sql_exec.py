@@ -5,7 +5,8 @@ Implements SQLExecutor for running SQL queries as workflow tasks.
 """
 from .base import BaseExecutor
 from sqlalchemy import text
-from zuriflow.db import engine
+from ..db import engine
+
 
 class SQLExecutor(BaseExecutor):
     def execute(self, params, context):

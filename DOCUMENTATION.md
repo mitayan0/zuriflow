@@ -70,4 +70,38 @@ See `examples/simple_dag.json` and `examples/full_dag.json` for reference.
 - Use the payloads in `examples/api_payloads.json` and scripts in `scripts/` for end-to-end tests.
 
 ---
+
+## Scheduling Workflows with Celery Beat & RedBeat
+
+This project supports distributed workflow scheduling using Celery beat (filesystem) or RedBeat (Redis-backed, production-grade).
+
+**How it works:**
+
+- All workflows with a `schedule` (cron string) are auto-registered as periodic Celery tasks on worker startup.
+- The scheduler triggers workflow runs at the specified times, using the orchestrator for execution.
+
+**RedBeat (recommended for production):**
+
+- Install RedBeat: `pip install redbeat`
+- Set the following in your environment/config:
+  - `CELERY_BEAT_SCHEDULER=redbeat.RedBeatScheduler`
+  - `REDIS_URL` (used for both broker and RedBeat storage)
+- Start the beat process:
+  - `celery -A zuriflow.celery_worker beat --loglevel=info`
+
+**Celery beat (filesystem, for dev/small scale):**
+
+- No extra dependencies needed.
+- Start the beat process:
+  - `celery -A zuriflow.celery_worker beat --loglevel=info`
+
+**Notes:**
+
+- All scheduling logic is in `src/zuriflow/schedulers.py`.
+- On worker/beat startup, all scheduled workflows are registered.
+- To add or update schedules, update the workflow's `schedule` field and restart the worker/beat.
+
+See `src/zuriflow/schedulers.py` for details.
+
+---
 For more, see code comments and the `README.md` for usage tips.

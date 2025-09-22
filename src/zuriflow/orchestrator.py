@@ -11,7 +11,7 @@ import typing as _typing
 import networkx as nx
 from celery import group, chain
 from .db import SessionLocal, Workflow, WorkflowRun, TaskRun, TaskStatus
-
+from .celery_worker import run_task
 
 def run_workflow(workflow_id: int, run_id: _typing.Optional[int] = None):
     """
@@ -19,7 +19,7 @@ def run_workflow(workflow_id: int, run_id: _typing.Optional[int] = None):
     Handles advanced features: branching, conditions, loops, error handling, timeouts, and extensibility.
     """
     # Import here to break circular import
-    from .celery_worker import run_task
+    
 
     session = SessionLocal()
 
